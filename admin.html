@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manthan Co. — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{--night:#0F0F1A;--deep:#1A1A2E;--sunset:#C45A1A;--gold:#E89B2D;--warm:#F5ECD7;--muted:rgba(245,236,215,0.55);--border:rgba(232,155,45,0.18);--success:#2D7A4A;--danger:#8B2500;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--night);color:var(--warm);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;}
+
+/* LOGIN */
+.login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
+.login-box{width:100%;max-width:400px;border:1px solid var(--border);padding:48px;background:var(--deep);}
+.login-logo{font-family:'Playfair Display',serif;font-size:24px;font-weight:500;color:var(--warm);margin-bottom:4px;}
+.login-logo span{color:var(--gold);}
+.login-sub{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:36px;}
+.login-field{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+.login-label{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);}
+.login-input{background:rgba(245,236,215,0.04);border:1px solid var(--border);color:var(--warm);padding:13px 16px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;width:100%;transition:border-color 0.3s;}
+.login-input:focus{border-color:rgba(232,155,45,0.5);}
+.login-btn{width:100%;padding:14px;background:var(--sunset);color:var(--warm);border:none;font-family:'DM Sans',sans-serif;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;font-weight:500;cursor:pointer;transition:background 0.3s;margin-top:8px;}
+.login-btn:hover{background:var(--gold);color:var(--night);}
+.login-err{color:#ff6b6b;font-size:12px;margin-top:8px;display:none;}
+
+/* ADMIN LAYOUT */
+.admin{display:none;min-height:100vh;}
+.admin-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:rgba(15,15,26,0.98);border-bottom:1px solid var(--border);}
+.admin-logo{font-family:'Playfair Display',serif;font-size:18px;color:var(--warm);}
+.admin-logo span{color:var(--gold);}
+.admin-badge{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--sunset);border:1px solid rgba(196,90,26,0.4);padding:3px 8px;margin-left:10px;}
+.admin-logout{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);cursor:pointer;border:1px solid var(--border);padding:7px 14px;background:transparent;font-family:'DM Sans',sans-serif;transition:all 0.3s;}
+.admin-logout:hover{color:var(--gold);border-color:var(--gold);}
+.admin-body{display:grid;grid-template-columns:220px 1fr;min-height:100vh;padding-top:58px;}
+.sidebar{background:var(--deep);border-right:1px solid var(--border);padding:32px 0;position:fixed;left:0;top:58px;bottom:0;width:220px;overflow-y:auto;}
+.sidebar-section{font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);padding:0 24px;margin-bottom:8px;margin-top:24px;opacity:0.5;}
+.sidebar-section:first-child{margin-top:0;}
+.sidebar-item{display:flex;align-items:center;gap:12px;padding:10px 24px;cursor:pointer;transition:all 0.3s;font-size:13px;color:var(--muted);border-left:2px solid transparent;}
+.sidebar-item:hover{color:var(--warm);background:rgba(245,236,215,0.03);}
+.sidebar-item.active{color:var(--gold);border-left-color:var(--gold);background:rgba(232,155,45,0.05);}
+.sidebar-icon{font-size:14px;width:18px;text-align:center;}
+.main{margin-left:220px;padding:40px;min-height:calc(100vh - 58px);}
+
+/* PANELS */
+.panel{display:none;}
+.panel.active{display:block;}
+.panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;}
+.panel-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:500;}
+.panel-sub{font-size:13px;color:var(--muted);margin-top:4px;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:40px;}
+.stat-card{background:var(--deep);border:1px solid var(--border);padding:24px;}
+.stat-num{font-family:'Playfair Display',serif;font-size:36px;font-weight:500;color:var(--gold);line-height:1;}
+.stat-label{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-top:8px;}
+
+/* BUTTONS */
+.btn{padding:10px 20px;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;font-weight:500;cursor:pointer;transition:all 0.3s;font-family:'DM Sans',sans-serif;border:none;}
+.btn-gold{background:var(--gold);color:var(--night);}
+.btn-gold:hover{background:var(--sunset);color:var(--warm);}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted);}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+.btn-danger{background:transparent;border:1px solid rgba(139,37,0,0.5);color:#ff8a65;}
+.btn-danger:hover{background:rgba(139,37,0,0.2);}
+.btn-sm{padding:6px 14px;font-size:10px;}
+
+/* TABLE */
+.data-table{width:100%;border-collapse:collapse;}
+.data-table th{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);padding:12px 16px;text-align:left;border-bottom:1px solid var(--border);font-weight:400;}
+.data-table td{padding:14px 16px;border-bottom:1px solid rgba(232,155,45,0.07);font-size:13px;color:var(--muted);vertical-align:middle;}
+.data-table tr:hover td{background:rgba(245,236,215,0.02);}
+.data-table .title-cell{color:var(--warm);font-weight:400;max-width:280px;}
+.badge{display:inline-block;padding:3px 10px;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;}
+.badge-published{background:rgba(45,122,74,0.2);border:1px solid rgba(45,122,74,0.4);color:#6fcf97;}
+.badge-draft{background:rgba(139,37,0,0.15);border:1px solid rgba(139,37,0,0.3);color:#ff8a65;}
+.badge-image{background:rgba(232,155,45,0.1);border:1px solid var(--border);color:var(--gold);}
+.badge-video{background:rgba(196,90,26,0.1);border:1px solid rgba(196,90,26,0.3);color:var(--sunset);}
+.actions{display:flex;gap:8px;}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,20,0.85);z-index:200;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--deep);border:1px solid var(--border);padding:40px;width:100%;max-width:680px;max-height:90vh;overflow-y:auto;}
+.modal-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:500;margin-bottom:28px;}
+.modal-footer{display:flex;gap:12px;justify-content:flex-end;margin-top:28px;padding-top:24px;border-top:1px solid var(--border);}
+.form-group{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+.form-group label{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);}
+.form-group input,.form-group textarea,.form-group select{background:rgba(245,236,215,0.04);border:1px solid var(--border);color:var(--warm);padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color 0.3s;width:100%;}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:rgba(232,155,45,0.5);}
+.form-group select option{background:var(--deep);}
+.form-group textarea{resize:vertical;min-height:120px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px;background:rgba(245,236,215,0.03);border:1px solid var(--border);}
+.toggle{width:40px;height:22px;background:rgba(245,236,215,0.1);border-radius:11px;position:relative;cursor:pointer;transition:background 0.3s;}
+.toggle.on{background:var(--gold);}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:white;transition:transform 0.3s;}
+.toggle.on::after{transform:translateX(18px);}
+
+/* FILE UPLOAD */
+.upload-area{border:1px dashed var(--border);padding:40px;text-align:center;transition:all 0.3s;cursor:pointer;}
+.upload-area:hover{border-color:var(--gold);background:rgba(232,155,45,0.03);}
+.upload-area p{font-size:13px;color:var(--muted);margin-bottom:8px;}
+.upload-area span{font-size:11px;color:var(--gold);}
+.upload-preview{margin-top:12px;display:none;}
+.upload-preview img,.upload-preview video{max-width:100%;max-height:200px;border:1px solid var(--border);}
+
+/* CONTACTS */
+.contact-card{background:var(--deep);border:1px solid var(--border);padding:24px;margin-bottom:12px;transition:border-color 0.3s;}
+.contact-card:hover{border-color:rgba(232,155,45,0.3);}
+.contact-card.unread{border-left:3px solid var(--gold);}
+.contact-name{font-size:15px;color:var(--warm);margin-bottom:4px;}
+.contact-email{font-size:12px;color:var(--gold);margin-bottom:8px;}
+.contact-service{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.contact-msg{font-size:13px;color:var(--muted);line-height:1.7;}
+.contact-time{font-size:10px;color:var(--muted);opacity:0.4;margin-top:12px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;right:28px;background:var(--deep);border:1px solid var(--gold);color:var(--warm);padding:12px 22px;font-size:13px;z-index:9999;opacity:0;transform:translateY(12px);transition:all 0.4s;pointer-events:none;}
+.toast.show{opacity:1;transform:translateY(0);}
+.loading-msg{padding:40px;text-align:center;color:var(--muted);font-size:13px;}
+
+@media(max-width:768px){
+  .admin-body{grid-template-columns:1fr;}
+  .sidebar{display:none;}
+  .main{margin-left:0;padding:20px;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .form-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">Manthan <span>Co.</span></div>
+    <div class="login-sub">Admin Panel</div>
+    <div class="login-field">
+      <label class="login-label">Password</label>
+      <input type="password" class="login-input" id="loginPass" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="login-btn" onclick="doLogin()">Enter Admin</button>
+    <div class="login-err" id="loginErr">Incorrect password. Try again.</div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="admin" id="adminPanel">
+  <nav class="admin-nav">
+    <div style="display:flex;align-items:center;">
+      <div class="admin-logo">Manthan <span>Co.</span></div>
+      <span class="admin-badge">Admin</span>
+    </div>
+    <button class="admin-logout" onclick="logout()">Logout</button>
+  </nav>
+  <div class="admin-body">
+    <div class="sidebar">
+      <div class="sidebar-section">Overview</div>
+      <div class="sidebar-item active" onclick="showPanel('dashboard',this)"><span class="sidebar-icon">◎</span>Dashboard</div>
+      <div class="sidebar-section">Content</div>
+      <div class="sidebar-item" onclick="showPanel('blogs',this)"><span class="sidebar-icon">✦</span>Blog Posts</div>
+      <div class="sidebar-item" onclick="showPanel('gallery',this)"><span class="sidebar-icon">◈</span>Gallery</div>
+      <div class="sidebar-section">Inbox</div>
+      <div class="sidebar-item" onclick="showPanel('contacts',this)"><span class="sidebar-icon">◇</span>Messages <span id="unread-badge" style="margin-left:auto;background:var(--gold);color:var(--night);font-size:9px;padding:2px 7px;border-radius:10px;display:none;"></span></div>
+    </div>
+    <div class="main">
+
+      <!-- DASHBOARD -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="panel-header">
+          <div><div class="panel-title">Dashboard</div><div class="panel-sub">Welcome back, Sandeep. The churn continues.</div></div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-num" id="stat-posts">—</div><div class="stat-label">Blog Posts</div></div>
+          <div class="stat-card"><div class="stat-num" id="stat-gallery">—</div><div class="stat-label">Gallery Items</div></div>
+          <div class="stat-card"><div class="stat-num" id="stat-messages">—</div><div class="stat-label">Messages</div></div>
+          <div class="stat-card"><div class="stat-num" id="stat-unread">—</div><div class="stat-label">Unread</div></div>
+        </div>
+        <div style="background:var(--deep);border:1px solid var(--border);padding:28px;">
+          <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;">Quick Actions</div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <button class="btn btn-gold" onclick="showPanel('blogs',document.querySelector('[onclick*=blogs]'));openBlogModal()">+ New Blog Post</button>
+            <button class="btn btn-outline" onclick="showPanel('gallery',document.querySelector('[onclick*=gallery]'));openGalleryModal()">+ Upload to Gallery</button>
+            <button class="btn btn-outline" onclick="showPanel('contacts',document.querySelector('[onclick*=contacts]'))">View Messages</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- BLOGS -->
+      <div class="panel" id="panel-blogs">
+        <div class="panel-header">
+          <div><div class="panel-title">Blog Posts</div><div class="panel-sub">Write, publish, and manage your writing.</div></div>
+          <button class="btn btn-gold" onclick="openBlogModal()">+ New Post</button>
+        </div>
+        <div id="blogs-loading" class="loading-msg">Loading posts...</div>
+        <table class="data-table" id="blogs-table" style="display:none;">
+          <thead><tr><th>Title</th><th>Tag</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+          <tbody id="blogs-tbody"></tbody>
+        </table>
+        <div id="blogs-empty" class="loading-msg" style="display:none;">No posts yet. Write your first one.</div>
+      </div>
+
+      <!-- GALLERY -->
+      <div class="panel" id="panel-gallery">
+        <div class="panel-header">
+          <div><div class="panel-title">Gallery</div><div class="panel-sub">Upload and manage your photos and videos.</div></div>
+          <button class="btn btn-gold" onclick="openGalleryModal()">+ Upload</button>
+        </div>
+        <div id="gallery-loading" class="loading-msg">Loading gallery...</div>
+        <table class="data-table" id="gallery-table" style="display:none;">
+          <thead><tr><th>Preview</th><th>Title</th><th>Category</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="gallery-tbody"></tbody>
+        </table>
+        <div id="gallery-empty" class="loading-msg" style="display:none;">No gallery items yet. Upload your first photo or video.</div>
+      </div>
+
+      <!-- CONTACTS -->
+      <div class="panel" id="panel-contacts">
+        <div class="panel-header">
+          <div><div class="panel-title">Messages</div><div class="panel-sub">Contact form submissions from visitors.</div></div>
+        </div>
+        <div id="contacts-loading" class="loading-msg">Loading messages...</div>
+        <div id="contacts-list"></div>
+        <div id="contacts-empty" class="loading-msg" style="display:none;">No messages yet.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- BLOG MODAL -->
+<div class="modal-overlay" id="blogModal">
+  <div class="modal">
+    <div class="modal-title" id="blogModalTitle">New Blog Post</div>
+    <div class="form-group"><label>Title *</label><input type="text" id="b-title" placeholder="Your post title"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Slug (URL) *</label><input type="text" id="b-slug" placeholder="your-post-slug"></div>
+      <div class="form-group"><label>Tag</label>
+        <select id="b-tag">
+          <option>Philosophy</option><option>Life</option><option>Observation</option>
+          <option>Growth</option><option>Society</option><option>Photography</option><option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label>Excerpt (shown in listing)</label><textarea id="b-excerpt" style="min-height:80px;" placeholder="A short summary of your post..."></textarea></div>
+    <div class="form-group"><label>Content (HTML supported)</label><textarea id="b-content" style="min-height:240px;" placeholder="Write your full post here. You can use HTML tags like &lt;p&gt;, &lt;h2&gt;, &lt;blockquote&gt;, &lt;em&gt;"></textarea></div>
+    <div class="toggle-row">
+      <span style="font-size:13px;color:var(--warm);">Publish immediately</span>
+      <div class="toggle" id="b-published-toggle" onclick="this.classList.toggle('on')"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeBlogModal()">Cancel</button>
+      <button class="btn btn-gold" onclick="saveBlog()" id="save-blog-btn">Save Post</button>
+    </div>
+  </div>
+</div>
+
+<!-- GALLERY MODAL -->
+<div class="modal-overlay" id="galleryModal">
+  <div class="modal">
+    <div class="modal-title">Upload to Gallery</div>
+    <div class="form-group"><label>Title *</label><input type="text" id="g-title" placeholder="Photo or video title"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Category</label>
+        <select id="g-category">
+          <option>Sunset</option><option>Street</option><option>Portrait</option>
+          <option>Nature</option><option>Architecture</option><option>General</option>
+        </select>
+      </div>
+      <div class="form-group"><label>File Type</label>
+        <select id="g-type" onchange="updateUploadHint()">
+          <option value="image">Photo (JPG, PNG, WEBP)</option>
+          <option value="video">Video (MP4, MOV)</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Upload File *</label>
+      <div class="upload-area" onclick="document.getElementById('g-file').click()">
+        <p id="upload-hint-text">Click to select a photo</p>
+        <span id="upload-hint-sub">JPG, PNG or WEBP · Max 30MB</span>
+        <input type="file" id="g-file" style="display:none;" accept="image/*" onchange="previewFile(this)">
+        <div class="upload-preview" id="upload-preview"></div>
+      </div>
+    </div>
+    <div class="toggle-row">
+      <span style="font-size:13px;color:var(--warm);">Show in public gallery</span>
+      <div class="toggle on" id="g-published-toggle" onclick="this.classList.toggle('on')"></div>
+    </div>
+    <div id="upload-progress" style="display:none;margin-top:12px;">
+      <div style="font-size:12px;color:var(--gold);margin-bottom:8px;" id="upload-progress-text">Uploading...</div>
+      <div style="background:rgba(245,236,215,0.1);height:3px;border-radius:2px;"><div id="upload-bar" style="background:var(--gold);height:3px;width:0%;transition:width 0.3s;border-radius:2px;"></div></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeGalleryModal()">Cancel</button>
+      <button class="btn btn-gold" onclick="saveGallery()" id="save-gallery-btn">Upload & Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB='https://uvafqviruwrlvybfbuey.supabase.co';
+const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV2YWZxdmlydXdybHZ5YmZidWV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NTUyMzMsImV4cCI6MjA5MzIzMTIzM30.pX9E2L7dRtp9X3bdc0wwrXu6nCNMgKj6CVk3eCUjWsc';
+const H={'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json','Prefer':'return=representation'};
+const PASS='sandeepXmanthan@2026';
+
+async function sb(path,opts={}){
+  const r=await fetch(SB+'/rest/v1/'+path,{headers:H,...opts});
+  if(!r.ok)throw new Error(await r.text());
+  return r.status===204?null:r.json();
+}
+
+// LOGIN
+function doLogin(){
+  const pass=document.getElementById('loginPass').value;
+  if(pass===PASS){
+    sessionStorage.setItem('mc_auth','1');
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('adminPanel').style.display='block';
+    loadDashboard();
+  }else{
+    document.getElementById('loginErr').style.display='block';
+  }
+}
+
+function logout(){
+  sessionStorage.removeItem('mc_auth');
+  location.reload();
+}
+
+// Auto-login if session exists
+if(sessionStorage.getItem('mc_auth')==='1'){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('adminPanel').style.display='block';
+  setTimeout(loadDashboard,100);
+}
+
+// Toast
+function toast(msg,d=3000){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),d);}
+
+// Panels
+function showPanel(name,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  if(el)el.classList.add('active');
+  if(name==='blogs')loadBlogs();
+  if(name==='gallery')loadGalleryAdmin();
+  if(name==='contacts')loadContacts();
+}
+
+function fmt(d){return new Date(d).toLocaleDateString('en-IN',{year:'numeric',month:'short',day:'numeric'});}
+
+// DASHBOARD
+async function loadDashboard(){
+  try{
+    const[posts,gallery,contacts]=await Promise.all([
+      sb('blogs?select=id'),sb('gallery?select=id'),sb('contacts?select=id,read')
+    ]);
+    document.getElementById('stat-posts').textContent=posts.length;
+    document.getElementById('stat-gallery').textContent=gallery.length;
+    document.getElementById('stat-messages').textContent=contacts.length;
+    const unread=contacts.filter(c=>!c.read).length;
+    document.getElementById('stat-unread').textContent=unread;
+    if(unread>0){const b=document.getElementById('unread-badge');b.textContent=unread;b.style.display='inline';}
+  }catch(e){console.error(e);}
+}
+
+// BLOGS
+let editBlogId=null;
+async function loadBlogs(){
+  try{
+    const posts=await sb('blogs?select=*&order=created_at.desc');
+    document.getElementById('blogs-loading').style.display='none';
+    if(!posts.length){document.getElementById('blogs-empty').style.display='block';return;}
+    document.getElementById('blogs-table').style.display='table';
+    document.getElementById('blogs-tbody').innerHTML=posts.map(p=>`
+      <tr>
+        <td class="title-cell">${p.title}</td>
+        <td><span class="badge badge-image">${p.tag||'Philosophy'}</span></td>
+        <td><span class="badge ${p.published?'badge-published':'badge-draft'}">${p.published?'Published':'Draft'}</span></td>
+        <td>${fmt(p.created_at)}</td>
+        <td><div class="actions">
+          <button class="btn btn-outline btn-sm" onclick="editBlog('${p.id}')">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteBlog('${p.id}')">Delete</button>
+        </div></td>
+      </tr>`).join('');
+  }catch(e){document.getElementById('blogs-loading').textContent='Could not load posts.';}
+}
+
+function openBlogModal(id=null){
+  editBlogId=null;
+  document.getElementById('blogModalTitle').textContent='New Blog Post';
+  ['b-title','b-slug','b-excerpt','b-content'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('b-tag').value='Philosophy';
+  document.getElementById('b-published-toggle').classList.remove('on');
+  document.getElementById('blogModal').classList.add('open');
+}
+
+async function editBlog(id){
+  try{
+    const posts=await sb(`blogs?id=eq.${id}`);
+    const p=posts[0];
+    editBlogId=id;
+    document.getElementById('blogModalTitle').textContent='Edit Blog Post';
+    document.getElementById('b-title').value=p.title;
+    document.getElementById('b-slug').value=p.slug;
+    document.getElementById('b-tag').value=p.tag||'Philosophy';
+    document.getElementById('b-excerpt').value=p.excerpt||'';
+    document.getElementById('b-content').value=p.content||'';
+    if(p.published)document.getElementById('b-published-toggle').classList.add('on');
+    else document.getElementById('b-published-toggle').classList.remove('on');
+    document.getElementById('blogModal').classList.add('open');
+  }catch(e){toast('Could not load post.');}
+}
+
+function closeBlogModal(){document.getElementById('blogModal').classList.remove('open');}
+
+// Auto-generate slug
+document.addEventListener('DOMContentLoaded',()=>{
+  const titleEl=document.getElementById('b-title');
+  if(titleEl)titleEl.addEventListener('input',()=>{
+    if(!editBlogId)document.getElementById('b-slug').value=titleEl.value.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  });
+});
+
+async function saveBlog(){
+  const title=document.getElementById('b-title').value.trim();
+  const slug=document.getElementById('b-slug').value.trim();
+  if(!title||!slug){toast('Title and slug are required.');return;}
+  const btn=document.getElementById('save-blog-btn');
+  btn.disabled=true;btn.textContent='Saving...';
+  const data={title,slug,tag:document.getElementById('b-tag').value,excerpt:document.getElementById('b-excerpt').value,content:document.getElementById('b-content').value,published:document.getElementById('b-published-toggle').classList.contains('on'),updated_at:new Date().toISOString()};
+  try{
+    if(editBlogId){await sb(`blogs?id=eq.${editBlogId}`,{method:'PATCH',body:JSON.stringify(data)});}
+    else{await sb('blogs',{method:'POST',body:JSON.stringify(data)});}
+    closeBlogModal();
+    toast('✦ Post saved successfully!');
+    loadBlogs();loadDashboard();
+  }catch(e){toast('Error saving post. Slug may already exist.');}
+  btn.disabled=false;btn.textContent='Save Post';
+}
+
+async function deleteBlog(id){
+  if(!confirm('Delete this post? This cannot be undone.'))return;
+  try{await sb(`blogs?id=eq.${id}`,{method:'DELETE',headers:{...H,'Prefer':''}});toast('Post deleted.');loadBlogs();loadDashboard();}
+  catch(e){toast('Could not delete post.');}
+}
+
+// GALLERY
+async function loadGalleryAdmin(){
+  try{
+    const items=await sb('gallery?select=*&order=created_at.desc');
+    document.getElementById('gallery-loading').style.display='none';
+    if(!items.length){document.getElementById('gallery-empty').style.display='block';return;}
+    document.getElementById('gallery-table').style.display='table';
+    document.getElementById('gallery-tbody').innerHTML=items.map(item=>`
+      <tr>
+        <td>${item.file_type==='image'?`<img src="${item.file_url}" style="width:60px;height:48px;object-fit:cover;border:1px solid var(--border);">`:`<video src="${item.file_url}" style="width:60px;height:48px;object-fit:cover;" muted></video>`}</td>
+        <td class="title-cell">${item.title}</td>
+        <td>${item.category}</td>
+        <td><span class="badge ${item.file_type==='video'?'badge-video':'badge-image'}">${item.file_type}</span></td>
+        <td><span class="badge ${item.published?'badge-published':'badge-draft'}">${item.published?'Visible':'Hidden'}</span></td>
+        <td><div class="actions">
+          <button class="btn btn-outline btn-sm" onclick="toggleGalleryPublish('${item.id}',${item.published})">${item.published?'Hide':'Show'}</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteGallery('${item.id}')">Delete</button>
+        </div></td>
+      </tr>`).join('');
+  }catch(e){document.getElementById('gallery-loading').textContent='Could not load gallery.';}
+}
+
+function openGalleryModal(){
+  document.getElementById('g-title').value='';
+  document.getElementById('g-file').value='';
+  document.getElementById('upload-preview').innerHTML='';
+  document.getElementById('upload-preview').style.display='none';
+  document.getElementById('g-published-toggle').classList.add('on');
+  document.getElementById('galleryModal').classList.add('open');
+}
+function closeGalleryModal(){document.getElementById('galleryModal').classList.remove('open');}
+
+function updateUploadHint(){
+  const isVideo=document.getElementById('g-type').value==='video';
+  document.getElementById('g-file').accept=isVideo?'video/*':'image/*';
+  document.getElementById('upload-hint-text').textContent=isVideo?'Click to select a video':'Click to select a photo';
+  document.getElementById('upload-hint-sub').textContent=isVideo?'MP4 or MOV · Max 1GB':'JPG, PNG or WEBP · Max 30MB';
+}
+
+function previewFile(input){
+  if(!input.files[0])return;
+  const file=input.files[0];
+  const isVideo=file.type.startsWith('video');
+  const url=URL.createObjectURL(file);
+  const preview=document.getElementById('upload-preview');
+  preview.style.display='block';
+  preview.innerHTML=isVideo?`<video src="${url}" controls style="max-width:100%;max-height:180px;"></video>`:`<img src="${url}" style="max-width:100%;max-height:180px;">`;
+}
+
+async function saveGallery(){
+  const title=document.getElementById('g-title').value.trim();
+  const file=document.getElementById('g-file').files[0];
+  if(!title){toast('Title is required.');return;}
+  if(!file){toast('Please select a file to upload.');return;}
+  const btn=document.getElementById('save-gallery-btn');
+  btn.disabled=true;
+  const prog=document.getElementById('upload-progress');
+  prog.style.display='block';
+  document.getElementById('upload-progress-text').textContent='Uploading...';
+  document.getElementById('upload-bar').style.width='0%';
+  try{
+    const ext=file.name.split('.').pop();
+    const filename=`${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    // Upload to Supabase Storage
+    const uploadRes=await fetch(`${SB}/storage/v1/object/gallery/${filename}`,{
+      method:'POST',
+      headers:{'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':file.type},
+      body:file
+    });
+    document.getElementById('upload-bar').style.width='80%';
+    if(!uploadRes.ok)throw new Error('Upload failed');
+    const fileUrl=`${SB}/storage/v1/object/public/gallery/${filename}`;
+    document.getElementById('upload-bar').style.width='90%';
+    await sb('gallery',{method:'POST',body:JSON.stringify({
+      title,category:document.getElementById('g-category').value,
+      file_url:fileUrl,file_type:document.getElementById('g-type').value,
+      published:document.getElementById('g-published-toggle').classList.contains('on')
+    })});
+    document.getElementById('upload-bar').style.width='100%';
+    document.getElementById('upload-progress-text').textContent='Upload complete!';
+    setTimeout(()=>{prog.style.display='none';},1000);
+    closeGalleryModal();
+    toast('✦ File uploaded successfully!');
+    loadGalleryAdmin();loadDashboard();
+  }catch(e){toast('Upload failed. Check file size and try again.');}
+  btn.disabled=false;btn.textContent='Upload & Save';
+}
+
+async function toggleGalleryPublish(id,current){
+  try{await sb(`gallery?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({published:!current})});toast('Gallery updated.');loadGalleryAdmin();}
+  catch(e){toast('Could not update.');}
+}
+
+async function deleteGallery(id){
+  if(!confirm('Delete this item?'))return;
+  try{await sb(`gallery?id=eq.${id}`,{method:'DELETE',headers:{...H,'Prefer':''}});toast('Deleted.');loadGalleryAdmin();loadDashboard();}
+  catch(e){toast('Could not delete.');}
+}
+
+// CONTACTS
+async function loadContacts(){
+  try{
+    const msgs=await sb('contacts?select=*&order=created_at.desc');
+    document.getElementById('contacts-loading').style.display='none';
+    if(!msgs.length){document.getElementById('contacts-empty').style.display='block';return;}
+    document.getElementById('contacts-list').innerHTML=msgs.map(m=>`
+      <div class="contact-card ${m.read?'':'unread'}" onclick="markRead('${m.id}',this)">
+        <div class="contact-name">${m.name}</div>
+        <div class="contact-email">${m.email}</div>
+        ${m.service?`<div class="contact-service">${m.service}</div>`:''}
+        <div class="contact-msg">${m.message}</div>
+        <div class="contact-time">${fmt(m.created_at)} ${m.read?'· Read':'· <span style="color:var(--gold)">New</span>'}</div>
+      </div>`).join('');
+  }catch(e){document.getElementById('contacts-loading').textContent='Could not load messages.';}
+}
+
+async function markRead(id,el){
+  if(el.classList.contains('unread')){
+    try{await sb(`contacts?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({read:true})});el.classList.remove('unread');loadDashboard();}
+    catch(e){}
+  }
+}
+</script>
+</body>
+</html>

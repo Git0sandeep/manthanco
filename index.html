@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manthan Co. — Churn the Chaos. Find the Truth.</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{--night:#0F0F1A;--deep:#1A1A2E;--sunset:#C45A1A;--gold:#E89B2D;--warm:#F5ECD7;--muted:rgba(245,236,215,0.55);--border:rgba(232,155,45,0.18);}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--night);color:var(--warm);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden;}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:24px 48px;background:linear-gradient(to bottom,rgba(15,15,26,0.97),transparent);transition:all 0.4s;}
+nav.scrolled{padding:16px 48px;background:rgba(15,15,26,0.98);border-bottom:1px solid var(--border);}
+.nav-logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:500;color:var(--warm);cursor:pointer;}
+.nav-logo span{color:var(--gold);}
+.nav-links{display:flex;gap:32px;list-style:none;}
+.nav-links a{font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color 0.3s;cursor:pointer;}
+.nav-links a:hover,.nav-links a.active{color:var(--gold);}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;}
+.hamburger span{width:22px;height:1.5px;background:var(--warm);display:block;transition:all 0.3s;}
+.mobile-menu{display:none;position:fixed;inset:0;background:rgba(15,15,26,0.99);z-index:99;flex-direction:column;align-items:center;justify-content:center;gap:36px;}
+.mobile-menu.open{display:flex;}
+.mobile-menu a{font-family:'Playfair Display',serif;font-size:36px;color:var(--warm);text-decoration:none;cursor:pointer;}
+.mobile-menu a:hover{color:var(--gold);}
+.page{display:none;min-height:100vh;}
+.page.active{display:block;}
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 48px 72px;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 40% at 65% 58%,rgba(196,90,26,0.35) 0%,transparent 70%),radial-gradient(ellipse 80% 60% at 50% 100%,rgba(139,37,0,0.4) 0%,transparent 70%),linear-gradient(160deg,#0F0F1A 0%,#1A1014 40%,#2C1208 70%,#0F0F1A 100%);}
+.horizon-line{position:absolute;bottom:38%;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,rgba(232,155,45,0.5),rgba(196,90,26,0.8),rgba(232,155,45,0.5),transparent);}
+.sun{position:absolute;bottom:37%;left:58%;width:44px;height:44px;border-radius:50%;background:radial-gradient(circle,#FFD97A 0%,#E89B2D 40%,#C45A1A 80%);box-shadow:0 0 60px 20px rgba(232,155,45,0.3);animation:pulse 4s ease-in-out infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 60px 20px rgba(232,155,45,0.3);}50%{box-shadow:0 0 90px 35px rgba(232,155,45,0.45);}}
+.boats{position:absolute;bottom:36.5%;left:0;right:0;display:flex;justify-content:center;gap:100px;opacity:0.6;}
+.boat{width:36px;height:12px;position:relative;}
+.boat::before{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:36px;height:4px;background:#1A0A00;border-radius:50% 50% 0 0;}
+.boat::after{content:'';position:absolute;bottom:4px;left:55%;width:1px;height:10px;background:#1A0A00;}
+.water{position:absolute;bottom:0;left:0;right:0;height:38%;background:linear-gradient(to bottom,rgba(139,37,0,0.15),rgba(15,15,26,0.9));}
+.hero-content{position:relative;z-index:2;max-width:760px;animation:fadeUp 1.2s ease forwards;opacity:0;transform:translateY(30px);}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0);}}
+.hero-eyebrow{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:20px;}
+.hero-title{font-family:'Playfair Display',serif;font-size:clamp(40px,7vw,84px);line-height:1.05;font-weight:500;margin-bottom:28px;}
+.hero-title em{font-style:italic;color:var(--gold);}
+.hero-sub{font-size:15px;color:var(--muted);line-height:1.8;max-width:480px;margin-bottom:40px;}
+.hero-actions{display:flex;gap:16px;flex-wrap:wrap;}
+.btn-primary{padding:13px 32px;background:var(--sunset);color:var(--warm);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;font-weight:500;border:none;cursor:pointer;transition:all 0.3s;font-family:'DM Sans',sans-serif;}
+.btn-primary:hover{background:var(--gold);color:var(--night);}
+.btn-ghost{padding:13px 32px;background:transparent;color:var(--muted);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;font-weight:400;border:1px solid var(--border);cursor:pointer;transition:all 0.3s;font-family:'DM Sans',sans-serif;}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
+.philosophy-strip{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:24px 0;overflow:hidden;background:rgba(196,90,26,0.04);}
+.strip-inner{display:flex;gap:60px;animation:marquee 22s linear infinite;white-space:nowrap;}
+.strip-item{font-family:'Playfair Display',serif;font-size:13px;font-style:italic;color:var(--muted);flex-shrink:0;}
+.strip-dot{color:var(--gold);margin:0 8px;}
+@keyframes marquee{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+.section{padding:90px 48px;}
+.section-label{font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,48px);font-weight:500;line-height:1.15;margin-bottom:20px;}
+.about-section{background:var(--deep);}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;max-width:1080px;}
+.about-visual{position:relative;height:380px;}
+.about-card{position:absolute;background:rgba(196,90,26,0.08);border:1px solid var(--border);padding:28px;}
+.about-card-main{inset:0;display:flex;flex-direction:column;justify-content:flex-end;}
+.about-card-float{bottom:-20px;right:-20px;width:160px;background:var(--sunset);border:none;padding:20px;}
+.about-quote{font-family:'Playfair Display',serif;font-size:22px;font-style:italic;line-height:1.4;color:var(--warm);margin-bottom:14px;}
+.about-attr{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);}
+.about-float-num{font-family:'Playfair Display',serif;font-size:38px;font-weight:700;color:var(--warm);line-height:1;}
+.about-float-label{font-size:10px;color:rgba(245,236,215,0.7);margin-top:4px;}
+.about-body{font-size:15px;color:var(--muted);line-height:1.9;margin-bottom:14px;}
+.about-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px;}
+.tag{padding:7px 16px;border:1px solid var(--border);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);}
+.work-section{background:var(--night);}
+.work-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:48px;}
+.work-card{position:relative;height:280px;overflow:hidden;background:var(--deep);cursor:pointer;}
+.work-card-bg{position:absolute;inset:0;transition:transform 0.6s;}
+.work-card:hover .work-card-bg{transform:scale(1.06);}
+.wc1{background:linear-gradient(135deg,#1A1A2E,#2C1208);}
+.wc2{background:linear-gradient(135deg,#2C1208,#1A1A2E);}
+.wc3{background:linear-gradient(135deg,#1A0A00,#1A1A2E);}
+.wc4{background:linear-gradient(135deg,#0F0F1A,#2C1208);}
+.wc5{background:linear-gradient(135deg,#1A1A2E,#1A0A00);}
+.work-card-icon{position:absolute;top:24px;left:24px;width:34px;height:34px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;}
+.work-card-content{position:absolute;bottom:0;left:0;right:0;padding:20px 24px;background:linear-gradient(to top,rgba(15,15,26,0.95),transparent);transform:translateY(14px);transition:transform 0.4s;}
+.work-card:hover .work-card-content{transform:translateY(0);}
+.work-card-cat{font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
+.work-card-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:500;color:var(--warm);margin-bottom:5px;}
+.work-card-desc{font-size:12px;color:var(--muted);line-height:1.6;opacity:0;transition:opacity 0.4s 0.1s;}
+.work-card:hover .work-card-desc{opacity:1;}
+.page-hero{padding:120px 48px 48px;background:var(--deep);border-bottom:1px solid var(--border);}
+.page-hero-label{font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;}
+.page-hero-title{font-family:'Playfair Display',serif;font-size:clamp(36px,5vw,64px);font-weight:500;line-height:1.1;}
+.page-hero-title em{font-style:italic;color:var(--gold);}
+.page-hero-sub{font-size:15px;color:var(--muted);line-height:1.8;margin-top:18px;max-width:520px;}
+.blog-section{padding:60px 48px;background:var(--night);}
+.loading-msg{text-align:center;padding:60px;color:var(--muted);font-size:14px;}
+.blog-featured{display:grid;grid-template-columns:1.5fr 1fr;gap:2px;margin-bottom:2px;}
+.blog-side{display:flex;flex-direction:column;gap:2px;}
+.blog-card{background:var(--deep);padding:36px;border:1px solid var(--border);position:relative;overflow:hidden;transition:border-color 0.3s;cursor:pointer;}
+.blog-card:hover{border-color:rgba(232,155,45,0.45);}
+.blog-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,var(--sunset),var(--gold));transform:scaleX(0);transform-origin:left;transition:transform 0.4s;}
+.blog-card:hover::before{transform:scaleX(1);}
+.blog-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);opacity:0.5;margin-bottom:16px;}
+.blog-tag-pill{display:inline-block;padding:3px 10px;background:rgba(196,90,26,0.15);border:1px solid rgba(196,90,26,0.3);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--sunset);margin-bottom:14px;}
+.blog-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:500;line-height:1.3;margin-bottom:12px;color:var(--warm);}
+.blog-card.big .blog-title{font-size:28px;}
+.blog-excerpt{font-size:13px;color:var(--muted);line-height:1.8;margin-bottom:24px;}
+.blog-meta{display:flex;align-items:center;justify-content:space-between;}
+.blog-date{font-size:10px;color:var(--muted);opacity:0.5;}
+.blog-arrow{font-size:16px;color:var(--gold);transition:transform 0.3s;}
+.blog-card:hover .blog-arrow{transform:translateX(6px);}
+.blog-more{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:2px;}
+.post-view{display:none;padding:120px 48px 80px;max-width:760px;margin:0 auto;}
+.post-view.active{display:block;}
+.post-back{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;margin-bottom:40px;display:inline-flex;align-items:center;gap:8px;transition:gap 0.3s;}
+.post-back:hover{gap:14px;}
+.post-tag-pill{display:inline-block;padding:3px 10px;background:rgba(196,90,26,0.15);border:1px solid rgba(196,90,26,0.3);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--sunset);margin-bottom:20px;}
+.post-title{font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,46px);font-weight:500;line-height:1.15;margin-bottom:16px;}
+.post-date{font-size:11px;color:var(--muted);opacity:0.5;margin-bottom:40px;padding-bottom:40px;border-bottom:1px solid var(--border);}
+.post-body{font-size:16px;line-height:1.9;color:var(--muted);}
+.post-body p{margin-bottom:24px;}
+.post-body h2{font-family:'Playfair Display',serif;font-size:26px;font-weight:500;color:var(--warm);margin:40px 0 18px;}
+.post-body em{font-style:italic;color:var(--warm);}
+.post-body blockquote{border-left:2px solid var(--gold);padding-left:24px;margin:36px 0;font-family:'Playfair Display',serif;font-size:20px;font-style:italic;color:var(--warm);line-height:1.5;}
+.gallery-section{padding:60px 48px;background:var(--night);}
+.gallery-filters{display:flex;gap:12px;margin-bottom:40px;flex-wrap:wrap;}
+.filter-btn{padding:7px 18px;background:transparent;border:1px solid var(--border);color:var(--muted);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:all 0.3s;font-family:'DM Sans',sans-serif;}
+.filter-btn:hover,.filter-btn.active{border-color:var(--gold);color:var(--gold);}
+.gallery-grid{columns:3;gap:8px;}
+.gallery-item{break-inside:avoid;margin-bottom:8px;position:relative;overflow:hidden;cursor:pointer;}
+.gallery-item img,.gallery-item video{width:100%;display:block;transition:transform 0.5s;}
+.gallery-item:hover img,.gallery-item:hover video{transform:scale(1.04);}
+.gallery-overlay{position:absolute;inset:0;background:rgba(15,15,26,0.75);display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;padding:18px;opacity:0;transition:opacity 0.4s;}
+.gallery-item:hover .gallery-overlay{opacity:1;}
+.gallery-overlay-title{font-family:'Playfair Display',serif;font-size:15px;color:var(--warm);margin-bottom:3px;}
+.gallery-overlay-cat{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);}
+.empty-msg{text-align:center;padding:80px 20px;color:var(--muted);font-size:14px;line-height:1.8;}
+.empty-msg span{color:var(--gold);}
+.contact-section{padding:120px 48px 80px;background:var(--night);position:relative;overflow:hidden;}
+.contact-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:500px;height:500px;background:radial-gradient(circle,rgba(196,90,26,0.1) 0%,transparent 70%);pointer-events:none;}
+.contact-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:60px;align-items:start;position:relative;z-index:1;max-width:1080px;}
+.contact-info-title{font-family:'Playfair Display',serif;font-size:clamp(30px,4vw,50px);font-weight:500;line-height:1.15;margin-bottom:20px;}
+.contact-info-title em{font-style:italic;color:var(--gold);}
+.contact-info-sub{font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:36px;}
+.contact-items{display:flex;flex-direction:column;gap:16px;}
+.contact-item{display:flex;align-items:flex-start;gap:14px;padding:16px;border:1px solid var(--border);transition:border-color 0.3s;}
+.contact-item:hover{border-color:rgba(232,155,45,0.4);}
+.contact-item-icon{font-size:14px;color:var(--gold);margin-top:2px;flex-shrink:0;}
+.contact-item-label{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);opacity:0.6;margin-bottom:3px;}
+.contact-item-value{font-size:13px;color:var(--warm);}
+.contact-form{display:flex;flex-direction:column;gap:14px;}
+.form-field{display:flex;flex-direction:column;gap:7px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-label{font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);opacity:0.7;}
+.form-input,.form-textarea,.form-select{background:rgba(245,236,215,0.04);border:1px solid var(--border);color:var(--warm);padding:13px 16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:300;outline:none;transition:border-color 0.3s;width:100%;}
+.form-input:focus,.form-textarea:focus,.form-select:focus{border-color:rgba(232,155,45,0.5);}
+.form-select option{background:var(--deep);}
+.form-textarea{resize:vertical;min-height:110px;}
+.form-submit{padding:14px 40px;background:var(--sunset);color:var(--warm);border:none;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;font-weight:500;cursor:pointer;transition:background 0.3s;align-self:flex-start;margin-top:6px;}
+.form-submit:hover{background:var(--gold);color:var(--night);}
+.form-submit:disabled{opacity:0.6;cursor:not-allowed;}
+.form-success{display:none;padding:18px;border:1px solid rgba(232,155,45,0.4);background:rgba(232,155,45,0.06);color:var(--gold);font-size:13px;text-align:center;margin-top:8px;}
+footer{padding:36px 48px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--night);flex-wrap:wrap;gap:16px;}
+.footer-logo{font-family:'Playfair Display',serif;font-size:17px;font-weight:500;color:var(--warm);}
+.footer-logo span{color:var(--gold);}
+.footer-tagline{font-size:10px;color:var(--muted);opacity:0.4;margin-top:3px;}
+.footer-links{display:flex;gap:20px;flex-wrap:wrap;}
+.footer-links a{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;opacity:0.4;transition:all 0.3s;cursor:pointer;}
+.footer-links a:hover{opacity:1;color:var(--gold);}
+.footer-copy{font-size:10px;color:var(--muted);opacity:0.3;}
+.reveal{opacity:0;transform:translateY(32px);transition:opacity 0.7s,transform 0.7s;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.toast{position:fixed;bottom:28px;right:28px;background:var(--deep);border:1px solid var(--gold);color:var(--warm);padding:12px 22px;font-size:13px;z-index:9999;opacity:0;transform:translateY(12px);transition:all 0.4s;pointer-events:none;}
+.toast.show{opacity:1;transform:translateY(0);}
+@media(max-width:768px){
+  nav{padding:18px 20px;}nav.scrolled{padding:14px 20px;}
+  .nav-links{display:none;}.hamburger{display:flex;}
+  .hero{padding:0 20px 56px;}
+  .hero-title{font-size:clamp(36px,10vw,54px);}
+  .sun{left:50%;bottom:35%;}.boats{gap:40px;}
+  .section{padding:60px 20px;}
+  .about-grid{grid-template-columns:1fr;gap:40px;}
+  .about-visual{height:260px;}.about-card-float{bottom:-14px;right:-8px;width:130px;}
+  .work-grid{grid-template-columns:1fr 1fr;}.work-card{height:220px;}
+  .work-card:last-child{grid-column:span 2;}
+  .page-hero{padding:100px 20px 40px;}
+  .blog-section{padding:40px 20px;}
+  .blog-featured{grid-template-columns:1fr;}
+  .blog-more{grid-template-columns:1fr;}
+  .gallery-section{padding:40px 20px;}.gallery-grid{columns:2;}
+  .contact-section{padding:100px 20px 60px;}.contact-grid{grid-template-columns:1fr;}
+  .form-row{grid-template-columns:1fr;}
+  .post-view{padding:100px 20px 60px;}
+  footer{padding:28px 20px;flex-direction:column;align-items:flex-start;}
+}
+@media(max-width:480px){
+  .work-grid{grid-template-columns:1fr;}.work-card:last-child{grid-column:span 1;}
+  .gallery-grid{columns:1;}.hero-actions{flex-direction:column;}
+  .btn-primary,.btn-ghost{width:100%;text-align:center;}
+}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="nav-logo" onclick="showPage('home')">Manthan <span>Co.</span></div>
+  <ul class="nav-links">
+    <li><a onclick="showPage('home')" id="nav-home" class="active">Home</a></li>
+    <li><a onclick="showPage('blog')" id="nav-blog">Writing</a></li>
+    <li><a onclick="showPage('gallery')" id="nav-gallery">Gallery</a></li>
+    <li><a onclick="showPage('contact')" id="nav-contact">Contact</a></li>
+  </ul>
+  <div class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a onclick="showPage('home');toggleMenu()">Home</a>
+  <a onclick="showPage('blog');toggleMenu()">Writing</a>
+  <a onclick="showPage('gallery');toggleMenu()">Gallery</a>
+  <a onclick="showPage('contact');toggleMenu()">Contact</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<div class="toast" id="toast"></div>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <section class="hero">
+    <div class="hero-bg"></div><div class="horizon-line"></div><div class="sun"></div>
+    <div class="boats"><div class="boat"></div><div class="boat"></div><div class="boat"></div></div>
+    <div class="water"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Manthan Co. — Est. 2024</p>
+      <h1 class="hero-title">Churn the chaos.<br>Find the <em>truth.</em></h1>
+      <p class="hero-sub">From the depths, something real. A space where philosophy meets creativity — where every fall holds the strength of a rise.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="showPage('blog')">Read Writing</button>
+        <button class="btn-ghost" onclick="showPage('contact')">Work Together</button>
+      </div>
+    </div>
+  </section>
+  <div class="philosophy-strip">
+    <div class="strip-inner">
+      <span class="strip-item">If you are in your fall, be strong for your rise too<span class="strip-dot">✦</span></span>
+      <span class="strip-item">Observer<span class="strip-dot">·</span>Thinker<span class="strip-dot">·</span>Creator<span class="strip-dot">·</span>Builder<span class="strip-dot">✦</span></span>
+      <span class="strip-item">From the depths, something real<span class="strip-dot">✦</span></span>
+      <span class="strip-item">Churning chaos into meaning<span class="strip-dot">✦</span></span>
+      <span class="strip-item">If you are in your fall, be strong for your rise too<span class="strip-dot">✦</span></span>
+      <span class="strip-item">Observer<span class="strip-dot">·</span>Thinker<span class="strip-dot">·</span>Creator<span class="strip-dot">·</span>Builder<span class="strip-dot">✦</span></span>
+      <span class="strip-item">From the depths, something real<span class="strip-dot">✦</span></span>
+      <span class="strip-item">Churning chaos into meaning<span class="strip-dot">✦</span></span>
+    </div>
+  </div>
+  <section class="section about-section">
+    <div class="about-grid reveal">
+      <div class="about-visual">
+        <div class="about-card about-card-main">
+          <p class="about-quote">"I am doing my own business of minding my own business."</p>
+          <p class="about-attr">— Sandeep, Founder</p>
+        </div>
+        <div class="about-card about-card-float"><div class="about-float-num">∞</div><div class="about-float-label">Ideas churning</div></div>
+      </div>
+      <div>
+        <p class="section-label">About Manthan Co.</p>
+        <h2 class="section-title">Where deep thinking becomes real output.</h2>
+        <p class="about-body">Manthan means the churning — extracting something precious from chaos. A mind that works across philosophy and photography, creativity and craft, content and code.</p>
+        <p class="about-body">Founded by Sandeep, a 2024 graduate who decided skills shouldn't stay in silos. Writer, photographer, videographer, creator, builder — all at once, all with intention.</p>
+        <div class="about-tags">
+          <span class="tag">Philosophy</span><span class="tag">Photography</span><span class="tag">Videography</span>
+          <span class="tag">Content</span><span class="tag">Brand & Ads</span><span class="tag">Web</span>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section work-section">
+    <p class="section-label reveal">What We Do</p>
+    <h2 class="section-title reveal">The full spectrum of <em style="font-style:italic;color:var(--gold)">Manthan.</em></h2>
+    <div class="work-grid reveal">
+      <div class="work-card" onclick="showPage('gallery')"><div class="work-card-bg wc1"></div><div class="work-card-icon">◎</div><div class="work-card-content"><p class="work-card-cat">Videography</p><h3 class="work-card-title">Stories that move</h3><p class="work-card-desc">Short films, reels, and visual stories — capturing moments words can't hold.</p></div></div>
+      <div class="work-card" onclick="showPage('blog')"><div class="work-card-bg wc2"></div><div class="work-card-icon">✦</div><div class="work-card-content"><p class="work-card-cat">Philosophy & Writing</p><h3 class="work-card-title">Ideas that make you pause</h3><p class="work-card-desc">Life, growth, human behavior — written from observation, not imitation.</p></div></div>
+      <div class="work-card" onclick="showPage('gallery')"><div class="work-card-bg wc3"></div><div class="work-card-icon">◈</div><div class="work-card-content"><p class="work-card-cat">Photography</p><h3 class="work-card-title">Seeing what others walk past</h3><p class="work-card-desc">Visual storytelling through a raw and honest lens.</p></div></div>
+      <div class="work-card" onclick="showPage('contact')"><div class="work-card-bg wc4"></div><div class="work-card-icon">⬡</div><div class="work-card-content"><p class="work-card-cat">Brand & Content</p><h3 class="work-card-title">Brands that mean something</h3><p class="work-card-desc">UGC, ads, and content strategy for startups that want to be real.</p></div></div>
+      <div class="work-card" style="grid-column:span 2" onclick="showPage('contact')"><div class="work-card-bg wc5"></div><div class="work-card-icon">◇</div><div class="work-card-content"><p class="work-card-cat">Web & Apps</p><h3 class="work-card-title">Interactive things that work beautifully</h3><p class="work-card-desc">Websites, web pages, and small apps built with intention.</p></div></div>
+    </div>
+  </section>
+  <footer>
+    <div><div class="footer-logo">Manthan <span>Co.</span></div><div class="footer-tagline">Churn the chaos. Find the truth. · manthanco.blog</div></div>
+    <div class="footer-links"><a onclick="showPage('blog')">Writing</a><a onclick="showPage('gallery')">Gallery</a><a href="https://instagram.com/manthan_co" target="_blank">Instagram</a><a onclick="showPage('contact')">Contact</a></div>
+    <div class="footer-copy">© 2025 Manthan Co.</div>
+  </footer>
+</div>
+
+<!-- BLOG -->
+<div class="page" id="page-blog">
+  <div id="blog-list-view">
+    <div class="page-hero">
+      <p class="page-hero-label">Writing & Philosophy</p>
+      <h1 class="page-hero-title">Thoughts worth<br><em>churning over.</em></h1>
+      <p class="page-hero-sub">Observations on life, growth, human behavior, and the world as it actually is.</p>
+    </div>
+    <div class="blog-section">
+      <div id="blog-loading" class="loading-msg">Loading posts...</div>
+      <div id="blog-featured" class="blog-featured" style="display:none;"></div>
+      <div id="blog-side" class="blog-side" style="display:none;"></div>
+      <div id="blog-more" class="blog-more" style="display:none;margin-top:2px;"></div>
+      <div id="blog-empty" class="empty-msg" style="display:none;"><p>No posts yet.<br><span>The churn is happening. Check back soon.</span></p></div>
+    </div>
+    <footer><div><div class="footer-logo">Manthan <span>Co.</span></div><div class="footer-tagline">manthanco.blog</div></div><div class="footer-links"><a onclick="showPage('home')">Home</a><a onclick="showPage('gallery')">Gallery</a><a onclick="showPage('contact')">Contact</a></div><div class="footer-copy">© 2025 Manthan Co.</div></footer>
+  </div>
+  <div class="post-view" id="post-view" style="background:var(--night);">
+    <button class="post-back" onclick="showBlogList()">← Back to writing</button>
+    <div id="post-content"></div>
+  </div>
+</div>
+
+<!-- GALLERY -->
+<div class="page" id="page-gallery">
+  <div class="page-hero">
+    <p class="page-hero-label">Photography & Visual</p>
+    <h1 class="page-hero-title">Seeing what others<br><em>walk past.</em></h1>
+    <p class="page-hero-sub">A raw and honest visual diary — sunsets, streets, stillness, and everything in between.</p>
+  </div>
+  <div class="gallery-section">
+    <div class="gallery-filters">
+      <button class="filter-btn active" onclick="filterGallery('all',this)">All</button>
+      <button class="filter-btn" onclick="filterGallery('Sunset',this)">Sunsets</button>
+      <button class="filter-btn" onclick="filterGallery('Street',this)">Street</button>
+      <button class="filter-btn" onclick="filterGallery('Portrait',this)">Portrait</button>
+      <button class="filter-btn" onclick="filterGallery('Nature',this)">Nature</button>
+    </div>
+    <div id="gallery-loading" class="loading-msg">Loading gallery...</div>
+    <div class="gallery-grid" id="gallery-grid" style="display:none;"></div>
+    <div id="gallery-empty" class="empty-msg" style="display:none;"><p>Gallery is being curated.<br><span>The lens is always watching.</span></p></div>
+  </div>
+  <footer><div><div class="footer-logo">Manthan <span>Co.</span></div><div class="footer-tagline">manthanco.blog</div></div><div class="footer-links"><a onclick="showPage('home')">Home</a><a onclick="showPage('blog')">Writing</a><a onclick="showPage('contact')">Contact</a></div><div class="footer-copy">© 2025 Manthan Co.</div></footer>
+</div>
+
+<!-- CONTACT -->
+<div class="page" id="page-contact">
+  <div class="contact-section">
+    <div class="contact-glow"></div>
+    <div class="contact-grid">
+      <div>
+        <p class="section-label">Get In Touch</p>
+        <h2 class="contact-info-title">Let's churn something <em>real</em> together.</h2>
+        <p class="contact-info-sub">Startups, creators, brands — if you want work that actually means something, let's talk.</p>
+        <div class="contact-items">
+          <div class="contact-item"><div class="contact-item-icon">✦</div><div><p class="contact-item-label">Instagram</p><p class="contact-item-value">@manthan_co</p></div></div>
+          <div class="contact-item"><div class="contact-item-icon">◎</div><div><p class="contact-item-label">Website</p><p class="contact-item-value">manthanco.blog</p></div></div>
+          <div class="contact-item"><div class="contact-item-icon">◇</div><div><p class="contact-item-label">Based in</p><p class="contact-item-value">Patna, Bihar, India</p></div></div>
+          <div class="contact-item"><div class="contact-item-icon">○</div><div><p class="contact-item-label">Open for</p><p class="contact-item-value">Content · Brand · Photography · Web · Collab</p></div></div>
+        </div>
+      </div>
+      <div>
+        <form class="contact-form" id="contactForm" onsubmit="submitContact(event)">
+          <div class="form-row">
+            <div class="form-field"><label class="form-label">Your Name *</label><input type="text" class="form-input" id="cf-name" placeholder="Your name" required></div>
+            <div class="form-field"><label class="form-label">Your Email *</label><input type="email" class="form-input" id="cf-email" placeholder="hello@email.com" required></div>
+          </div>
+          <div class="form-field"><label class="form-label">I need help with</label>
+            <select class="form-select" id="cf-service">
+              <option value="">Select a service...</option>
+              <option>Content Creation</option><option>Brand & Ads</option>
+              <option>Photography</option><option>Videography</option>
+              <option>Website / App</option><option>Collaboration</option><option>Something else</option>
+            </select>
+          </div>
+          <div class="form-field"><label class="form-label">Tell me more *</label><textarea class="form-textarea" id="cf-message" placeholder="Share your idea, project, or just say hello..." required></textarea></div>
+          <button type="submit" class="form-submit" id="cf-btn">Send the message</button>
+          <div class="form-success" id="form-success">✦ Message received. I'll be in touch soon.</div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <footer><div><div class="footer-logo">Manthan <span>Co.</span></div><div class="footer-tagline">manthanco.blog</div></div><div class="footer-links"><a onclick="showPage('home')">Home</a><a onclick="showPage('blog')">Writing</a><a onclick="showPage('gallery')">Gallery</a></div><div class="footer-copy">© 2025 Manthan Co.</div></footer>
+</div>
+
+<script>
+const SB = 'https://uvafqviruwrlvybfbuey.supabase.co';
+const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV2YWZxdmlydXdybHZ5YmZidWV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NTUyMzMsImV4cCI6MjA5MzIzMTIzM30.pX9E2L7dRtp9X3bdc0wwrXu6nCNMgKj6CVk3eCUjWsc';
+const H = {'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json','Prefer':'return=representation'};
+
+async function sb(path,opts={}){
+  const r=await fetch(SB+'/rest/v1/'+path,{headers:H,...opts});
+  if(!r.ok)throw new Error(await r.text());
+  return r.status===204?null:r.json();
+}
+
+// Nav scroll
+window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',scrollY>60));
+
+// Mobile menu
+function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
+
+// Toast
+function toast(msg,d=3000){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),d);}
+
+// Page navigation
+function showPage(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.querySelectorAll('.nav-links a').forEach(x=>x.classList.remove('active'));
+  const el=document.getElementById('nav-'+p);if(el)el.classList.add('active');
+  window.scrollTo(0,0);
+  if(p==='blog')loadBlogs();
+  if(p==='gallery')loadGallery();
+  setTimeout(initReveals,120);
+}
+
+// Reveal
+function initReveals(){
+  const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:0.1});
+  document.querySelectorAll('.reveal').forEach(r=>{r.classList.remove('visible');obs.observe(r);});
+}
+initReveals();
+
+// ===== BLOG =====
+let blogsCache=null;
+async function loadBlogs(){
+  if(blogsCache!==null){renderBlogList(blogsCache);return;}
+  try{
+    const posts=await sb('blogs?select=*&order=created_at.desc');
+    blogsCache=posts||[];
+    document.getElementById('blog-loading').style.display='none';
+    renderBlogList(blogsCache);
+  }catch(e){document.getElementById('blog-loading').textContent='Could not load posts. Check back soon.';}
+}
+
+function fmt(d){return new Date(d).toLocaleDateString('en-IN',{year:'numeric',month:'long',day:'numeric'});}
+
+function blogCard(post,i,big=false){
+  return `<div class="blog-card${big?' big':''}" onclick="openPost('${post.id}')">
+    <p class="blog-num">0${i+1}</p>
+    <span class="blog-tag-pill">${post.tag||'Philosophy'}</span>
+    <h3 class="blog-title">${post.title}</h3>
+    <p class="blog-excerpt">${post.excerpt||''}</p>
+    <div class="blog-meta"><span class="blog-date">${fmt(post.created_at)}</span><span class="blog-arrow">→</span></div>
+  </div>`;
+}
+
+function renderBlogList(posts){
+  const fl=document.getElementById('blog-featured');
+  const sl=document.getElementById('blog-side');
+  const ml=document.getElementById('blog-more');
+  if(!posts.length){document.getElementById('blog-empty').style.display='block';return;}
+  fl.style.display='grid';
+  if(posts[0])fl.innerHTML=blogCard(posts[0],0,true);
+  if(posts[1]||posts[2]){
+    sl.style.display='flex';
+    sl.innerHTML=(posts[1]?blogCard(posts[1],1):'')+(posts[2]?blogCard(posts[2],2):'');
+    // Restructure featured grid to include side
+    fl.style.gridTemplateColumns='1.5fr 1fr';
+    fl.appendChild(sl);
+  }
+  if(posts.length>3){ml.style.display='grid';ml.innerHTML=posts.slice(3).map((p,i)=>blogCard(p,i+3)).join('');}
+}
+
+async function openPost(id){
+  try{
+    const posts=await sb(`blogs?id=eq.${id}&published=eq.true`);
+    const p=posts[0];
+    document.getElementById('post-content').innerHTML=`
+      <span class="post-tag-pill">${p.tag||'Philosophy'}</span>
+      <h1 class="post-title">${p.title}</h1>
+      <p class="post-date">${fmt(p.created_at)} · Manthan Co.</p>
+      <div class="post-body">${p.content}</div>`;
+    document.getElementById('blog-list-view').style.display='none';
+    const pv=document.getElementById('post-view');pv.style.display='block';pv.classList.add('active');
+    window.scrollTo(0,0);
+  }catch(e){toast('Could not load post.');}
+}
+
+function showBlogList(){
+  document.getElementById('blog-list-view').style.display='block';
+  const pv=document.getElementById('post-view');pv.style.display='none';pv.classList.remove('active');
+  window.scrollTo(0,0);
+}
+
+// ===== GALLERY =====
+let galleryCache=null;
+async function loadGallery(){
+  galleryCache=null; // always reload fresh
+  try{
+    const items=await sb('gallery?select=*&order=created_at.desc');
+    galleryCache=items||[];
+    document.getElementById('gallery-loading').style.display='none';
+    if(!galleryCache.length){document.getElementById('gallery-empty').style.display='block';return;}
+    document.getElementById('gallery-grid').style.display='block';
+    renderGallery(galleryCache);
+  }catch(e){document.getElementById('gallery-loading').textContent='Could not load gallery.';}
+}
+
+function renderGallery(items){
+  document.getElementById('gallery-grid').innerHTML=items.map(item=>`
+    <div class="gallery-item" data-cat="${item.category}">
+      ${item.file_type==='video'
+        ?`<video src="${item.file_url}" muted playsinline preload="metadata" style="width:100%;display:block;"></video>`
+        :`<img src="${item.file_url}" alt="${item.title}" loading="lazy">`}
+      <div class="gallery-overlay">
+        <p class="gallery-overlay-title">${item.title}</p>
+        <p class="gallery-overlay-cat">${item.category} · ${new Date(item.created_at).getFullYear()}</p>
+      </div>
+    </div>`).join('');
+}
+
+function filterGallery(cat,btn){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered=cat==='all'?galleryCache:(galleryCache||[]).filter(i=>i.category===cat);
+  if(!filtered||!filtered.length){
+    document.getElementById('gallery-grid').style.display='none';
+    document.getElementById('gallery-empty').style.display='block';
+  }else{
+    document.getElementById('gallery-empty').style.display='none';
+    document.getElementById('gallery-grid').style.display='block';
+    renderGallery(filtered);
+  }
+}
+
+// ===== CONTACT =====
+emailjs.init('CvqoSVp2AwbTWURe6');
+
+async function submitContact(e){
+  e.preventDefault();
+  const btn=document.getElementById('cf-btn');
+  const name=document.getElementById('cf-name').value;
+  const email=document.getElementById('cf-email').value;
+  const service=document.getElementById('cf-service').value;
+  const message=document.getElementById('cf-message').value;
+  btn.disabled=true;btn.textContent='Sending...';
+  try{
+    // Save to Supabase
+    await sb('contacts',{method:'POST',body:JSON.stringify({name,email,service,message})});
+    // Send email via EmailJS
+    await emailjs.send('service_cjqx02n','template_kusu05h',{
+      from_name:name,from_email:email,service:service||'Not specified',message:message
+    });
+    document.getElementById('contactForm').reset();
+    document.getElementById('form-success').style.display='block';
+    btn.textContent='Send the message';btn.disabled=false;
+    toast('✦ Message sent successfully!');
+  }catch(err){
+    console.error(err);
+    btn.textContent='Send the message';btn.disabled=false;
+    toast('Something went wrong. Please try again.');
+  }
+}
+</script>
+</body>
+</html>
